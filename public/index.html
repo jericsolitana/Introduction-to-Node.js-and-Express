@@ -1,13 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Static File</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List App</title>
 </head>
 <body>
+    <h1>Hello from a Static File</h1>   
+    <form id="item-form">
+        <input type="text" id="item-input" placeholder="Add an item" required>
+        <button type="submit">Add</button>
+    </form>      
+    <ul id="item-list"></ul>
 
-<h1>Hello from a static file!</h1>
+    <script>
+        const form = document.getElementById("item-form");
+        const input = document.getElementById("item-input");
+        const list = document.getElementById("item-list");
 
+        // Handle form submit
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const item = input.value.trim();
+            if (item) {
+                const response = await fetch("/items", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ item })
+                });
+                input.value = "";
+                loadItems();
+            }
+        });
+
+        // Load and display items
+        async function loadItems() {
+            const response = await fetch("/items");
+            const items = await response.json();
+            list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        }
+
+        // Initial load
+        loadItems();
+    </script>
 </body>
 </html>
